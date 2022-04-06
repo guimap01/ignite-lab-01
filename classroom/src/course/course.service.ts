@@ -19,6 +19,12 @@ export class CourseService {
     return this.prismaService.course.create({ data: { title, slug } });
   }
 
+  findBySlug(slug: string) {
+    return this.prismaService.course.findUnique({
+      where: { slug },
+    });
+  }
+
   findAll() {
     return this.prismaService.course.findMany();
   }

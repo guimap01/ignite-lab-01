@@ -1,12 +1,13 @@
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Directive } from '@nestjs/graphql';
 import { Purchase } from 'src/purchases/entities/purchase.entity';
 
-@ObjectType()
+@ObjectType('User')
+@Directive('@key(fields: "authUserId")')
 export class Customer {
-  @Field(() => ID)
+  @Field()
   id: string;
 
-  @Field()
+  @Field(() => ID)
   authUserId: string;
 
   @Field(() => [Purchase])

@@ -14,5 +14,6 @@ import { EnrollmentService } from 'src/enrollment/enrollment.service';
     PrismaService,
     EnrollmentService,
   ],
+  exports: [StudentService],
 })
 export class StudentModule {}

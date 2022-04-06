@@ -16,5 +16,6 @@ import { EnrollmentService } from 'src/enrollment/enrollment.service';
     StudentService,
     EnrollmentService,
   ],
+  exports: [CourseService],
 })
 export class CourseModule {}

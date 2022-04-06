@@ -5,6 +5,7 @@ import {
   Args,
   ResolveField,
   Parent,
+  ResolveReference,
 } from '@nestjs/graphql';
 import { CustomersService } from './customers.service';
 import { Customer } from './entities/customer.entity';
@@ -38,5 +39,10 @@ export class CustomersResolver {
   @ResolveField(() => [Purchase])
   async purchases(@Parent() customer: Customer) {
     return this.purchasesService.findAllByCustomerId(customer.id);
+  }
+
+  @ResolveReference()
+  resolveReference(reference: { authUserId: string }) {
+    return this.customersService.findOneByAuthUserId(reference.authUserId);
   }
 }

@@ -5,6 +5,15 @@ import { PrismaService } from 'src/database/prisma/prisma.service';
 export class EnrollmentService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  create(studentId: string, courseId: string) {
+    return this.prismaService.enrollment.create({
+      data: {
+        studentId,
+        courseId,
+      },
+    });
+  }
+
   getByCourseAndStudentId(studentId: string, courseId: string) {
     return this.prismaService.enrollment.findFirst({
       where: {
