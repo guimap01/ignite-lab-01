@@ -23,7 +23,7 @@ export class AuthorizationGuard implements CanActivate {
     const { req, res } = this.returnRequestResponse(context);
 
     try {
-      await this.checkJWT()(req, res);
+      await this.checkJWT(req, res);
       return true;
     } catch (error) {
       throw new UnauthorizedException(error);
@@ -37,8 +37,8 @@ export class AuthorizationGuard implements CanActivate {
       res,
     };
   }
-  private checkJWT() {
-    return promisify(
+  private async checkJWT(req: any, res: any) {
+    const jwtPromise = promisify(
       jwt({
         secret: expressJwtSecret({
           cache: true,
@@ -51,5 +51,6 @@ export class AuthorizationGuard implements CanActivate {
         algorithms: ['RS256'],
       }),
     );
+    await jwtPromise(req, res);
   }
 }

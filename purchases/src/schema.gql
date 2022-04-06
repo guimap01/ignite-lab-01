@@ -2,6 +2,62 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Product {
+  id: ID!
+  title: String!
+  slug: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Purchase {
+  id: ID!
+  status: PurchaseStatus!
+  product: Product!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""Purchase status"""
+enum PurchaseStatus {
+  PENDING
+  APPROVED
+  FAILED
+}
+
+type Customer {
+  id: ID!
+  authUserId: String!
+  purchases: [Purchase!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 type Query {
-  test: String!
+  products: [Product!]!
+  purchases: [Purchase!]!
+  me: Customer!
+}
+
+type Mutation {
+  createProduct(createProductInput: CreateProductInput!): Product!
+  createPurchase(createPurchaseInput: CreatePurchaseInput!): Purchase!
+  createCustomer(createCustomerInput: CreateCustomerInput!): Customer!
+}
+
+input CreateProductInput {
+  title: String!
+}
+
+input CreatePurchaseInput {
+  productId: String!
+}
+
+input CreateCustomerInput {
+  authUserId: String!
 }
