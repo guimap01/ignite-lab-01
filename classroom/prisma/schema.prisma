@@ -8,10 +8,9 @@ datasource db {
 }
 
 model Student {
-  id       String @id @default(uuid())
-  name     String
-  email    String
-  password String
+  id String @id @default(uuid())
+
+  authUserId String? @unique
 
   updatedAt   DateTime     @updatedAt
   createdAt   DateTime     @default(now())
@@ -20,8 +19,8 @@ model Student {
 
 model Course {
   id    String @id @default(uuid())
-  title String
-  slug  String
+  title String @unique
+  slug  String @unique
 
   updatedAt  DateTime     @updatedAt
   createdAt  DateTime     @default(now())

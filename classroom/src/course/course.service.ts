@@ -1,26 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import slugify from 'slugify';
+import { PrismaService } from 'src/database/prisma/prisma.service';
 import { CreateCourseInput } from './dto/create-course.input';
-import { UpdateCourseInput } from './dto/update-course.input';
 
 @Injectable()
 export class CourseService {
-  create(createCourseInput: CreateCourseInput) {
-    return 'This action adds a new course';
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async create({ title }: CreateCourseInput) {
+    const course = await this.prismaService.course.findUnique({
+      where: { title },
+    });
+
+    if (course) {
+      throw new BadRequestException('Course already exists');
+    }
+    const slug = slugify(title, { lower: true, trim: true });
+    return this.prismaService.course.create({ data: { title, slug } });
   }
 
   findAll() {
-    return `This action returns all course`;
+    return this.prismaService.course.findMany();
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} course`;
-  }
-
-  update(id: number, updateCourseInput: UpdateCourseInput) {
-    return `This action updates a #${id} course`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} course`;
+  findOne(id: string) {
+    return this.prismaService.course.findUnique({ where: { id } });
   }
 }

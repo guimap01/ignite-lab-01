@@ -1,26 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { CreateEnrollmentInput } from './dto/create-enrollment.input';
-import { UpdateEnrollmentInput } from './dto/update-enrollment.input';
+import { PrismaService } from 'src/database/prisma/prisma.service';
 
 @Injectable()
 export class EnrollmentService {
-  create(createEnrollmentInput: CreateEnrollmentInput) {
-    return 'This action adds a new enrollment';
-  }
+  constructor(private readonly prismaService: PrismaService) {}
 
+  getByCourseAndStudentId(studentId: string, courseId: string) {
+    return this.prismaService.enrollment.findFirst({
+      where: {
+        studentId,
+        courseId,
+        canceledAt: null,
+      },
+    });
+  }
   findAll() {
-    return `This action returns all enrollment`;
+    return this.prismaService.enrollment.findMany({
+      where: {
+        canceledAt: null,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} enrollment`;
-  }
-
-  update(id: number, updateEnrollmentInput: UpdateEnrollmentInput) {
-    return `This action updates a #${id} enrollment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} enrollment`;
+  findAllByStudentId(studentId: string) {
+    return this.prismaService.enrollment.findMany({
+      where: {
+        studentId,
+        canceledAt: null,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 }

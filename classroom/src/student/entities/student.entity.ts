@@ -1,7 +1,11 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { Enrollment } from 'src/enrollment/entities/enrollment.entity';
 
 @ObjectType()
 export class Student {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => [Enrollment])
+  enrollments: Enrollment[];
 }

@@ -1,35 +1,45 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { EnrollmentService } from 'src/enrollment/enrollment.service';
+import { AuthorizationGuard } from 'src/http/auth/authorization.guard';
+import { AuthUser, CurrentUser } from 'src/http/auth/current-user';
+import { StudentService } from 'src/student/student.service';
 import { CourseService } from './course.service';
-import { Course } from './entities/course.entity';
 import { CreateCourseInput } from './dto/create-course.input';
-import { UpdateCourseInput } from './dto/update-course.input';
+import { Course } from './entities/course.entity';
 
 @Resolver(() => Course)
 export class CourseResolver {
-  constructor(private readonly courseService: CourseService) {}
+  constructor(
+    private readonly courseService: CourseService,
+    private readonly studentService: StudentService,
+    private readonly enrollmentService: EnrollmentService,
+  ) {}
 
-  @Mutation(() => Course)
-  createCourse(@Args('createCourseInput') createCourseInput: CreateCourseInput) {
-    return this.courseService.create(createCourseInput);
-  }
-
-  @Query(() => [Course], { name: 'course' })
+  @Query(() => [Course], { name: 'courses' })
+  @UseGuards(AuthorizationGuard)
   findAll() {
     return this.courseService.findAll();
   }
 
   @Query(() => Course, { name: 'course' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  @UseGuards(AuthorizationGuard)
+  async findOne(@Args('id') id: string, @CurrentUser() user: AuthUser) {
+    const student = await this.studentService.findByAuthUserId(user.sub);
+    const enrollment = await this.enrollmentService.getByCourseAndStudentId(
+      student.id,
+      id,
+    );
+
+    if (!enrollment) {
+      throw new UnauthorizedException('You are not enrolled in this course');
+    }
+
     return this.courseService.findOne(id);
   }
-
-  @Mutation(() => Course)
-  updateCourse(@Args('updateCourseInput') updateCourseInput: UpdateCourseInput) {
-    return this.courseService.update(updateCourseInput.id, updateCourseInput);
-  }
-
-  @Mutation(() => Course)
-  removeCourse(@Args('id', { type: () => Int }) id: number) {
-    return this.courseService.remove(id);
+  @Mutation(() => Course, { name: 'createCourse' })
+  @UseGuards(AuthorizationGuard)
+  create(@Args('createCourseInput') createCourseInput: CreateCourseInput) {
+    return this.courseService.create(createCourseInput);
   }
 }

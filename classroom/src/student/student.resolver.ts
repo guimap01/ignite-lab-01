@@ -1,35 +1,33 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, ResolveField, Parent } from '@nestjs/graphql';
 import { StudentService } from './student.service';
 import { Student } from './entities/student.entity';
-import { CreateStudentInput } from './dto/create-student.input';
-import { UpdateStudentInput } from './dto/update-student.input';
+import { UseGuards } from '@nestjs/common';
+import { AuthorizationGuard } from 'src/http/auth/authorization.guard';
+import { Enrollment } from 'src/enrollment/entities/enrollment.entity';
+import { EnrollmentService } from 'src/enrollment/enrollment.service';
+import { AuthUser, CurrentUser } from 'src/http/auth/current-user';
 
 @Resolver(() => Student)
 export class StudentResolver {
-  constructor(private readonly studentService: StudentService) {}
+  constructor(
+    private readonly studentService: StudentService,
+    private readonly enrollmentService: EnrollmentService,
+  ) {}
 
-  @Mutation(() => Student)
-  createStudent(@Args('createStudentInput') createStudentInput: CreateStudentInput) {
-    return this.studentService.create(createStudentInput);
-  }
-
-  @Query(() => [Student], { name: 'student' })
+  @Query(() => [Student], { name: 'students' })
+  @UseGuards(AuthorizationGuard)
   findAll() {
     return this.studentService.findAll();
   }
 
-  @Query(() => Student, { name: 'student' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.studentService.findOne(id);
+  @Query(() => Student, { name: 'me' })
+  @UseGuards(AuthorizationGuard)
+  me(@CurrentUser() user: AuthUser) {
+    return this.studentService.findByAuthUserId(user.sub);
   }
 
-  @Mutation(() => Student)
-  updateStudent(@Args('updateStudentInput') updateStudentInput: UpdateStudentInput) {
-    return this.studentService.update(updateStudentInput.id, updateStudentInput);
-  }
-
-  @Mutation(() => Student)
-  removeStudent(@Args('id', { type: () => Int }) id: number) {
-    return this.studentService.remove(id);
+  @ResolveField(() => [Enrollment])
+  enrollments(@Parent() student: Student) {
+    return this.enrollmentService.findAllByStudentId(student.id);
   }
 }

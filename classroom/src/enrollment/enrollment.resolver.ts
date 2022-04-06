@@ -1,35 +1,33 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { Resolver, Query, ResolveField, Parent } from '@nestjs/graphql';
+import { CourseService } from 'src/course/course.service';
+import { Course } from 'src/course/entities/course.entity';
+import { AuthorizationGuard } from 'src/http/auth/authorization.guard';
+import { Student } from 'src/student/entities/student.entity';
+import { StudentService } from 'src/student/student.service';
 import { EnrollmentService } from './enrollment.service';
 import { Enrollment } from './entities/enrollment.entity';
-import { CreateEnrollmentInput } from './dto/create-enrollment.input';
-import { UpdateEnrollmentInput } from './dto/update-enrollment.input';
 
 @Resolver(() => Enrollment)
 export class EnrollmentResolver {
-  constructor(private readonly enrollmentService: EnrollmentService) {}
+  constructor(
+    private readonly enrollmentService: EnrollmentService,
+    private readonly courseService: CourseService,
+    private readonly studentService: StudentService,
+  ) {}
 
-  @Mutation(() => Enrollment)
-  createEnrollment(@Args('createEnrollmentInput') createEnrollmentInput: CreateEnrollmentInput) {
-    return this.enrollmentService.create(createEnrollmentInput);
-  }
-
-  @Query(() => [Enrollment], { name: 'enrollment' })
+  @Query(() => [Enrollment], { name: 'enrollments' })
+  @UseGuards(AuthorizationGuard)
   findAll() {
     return this.enrollmentService.findAll();
   }
 
-  @Query(() => Enrollment, { name: 'enrollment' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.enrollmentService.findOne(id);
+  @ResolveField(() => Course)
+  course(@Parent() enrollment: Enrollment) {
+    return this.courseService.findOne(enrollment.courseId);
   }
-
-  @Mutation(() => Enrollment)
-  updateEnrollment(@Args('updateEnrollmentInput') updateEnrollmentInput: UpdateEnrollmentInput) {
-    return this.enrollmentService.update(updateEnrollmentInput.id, updateEnrollmentInput);
-  }
-
-  @Mutation(() => Enrollment)
-  removeEnrollment(@Args('id', { type: () => Int }) id: number) {
-    return this.enrollmentService.remove(id);
+  @ResolveField(() => Student)
+  student(@Parent() enrollment: Enrollment) {
+    return this.studentService.findOne(enrollment.studentId);
   }
 }
