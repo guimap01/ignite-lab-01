@@ -2,6 +2,68 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Student {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type Course {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type Enrollment {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
 type Query {
-  test: String!
+  student(id: Int!): Student!
+  course(id: Int!): Course!
+  enrollment(id: Int!): Enrollment!
+}
+
+type Mutation {
+  createStudent(createStudentInput: CreateStudentInput!): Student!
+  updateStudent(updateStudentInput: UpdateStudentInput!): Student!
+  removeStudent(id: Int!): Student!
+  createCourse(createCourseInput: CreateCourseInput!): Course!
+  updateCourse(updateCourseInput: UpdateCourseInput!): Course!
+  removeCourse(id: Int!): Course!
+  createEnrollment(createEnrollmentInput: CreateEnrollmentInput!): Enrollment!
+  updateEnrollment(updateEnrollmentInput: UpdateEnrollmentInput!): Enrollment!
+  removeEnrollment(id: Int!): Enrollment!
+}
+
+input CreateStudentInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateStudentInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateCourseInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateCourseInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateEnrollmentInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateEnrollmentInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }
