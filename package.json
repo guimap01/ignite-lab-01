@@ -1,0 +1,14 @@
+{
+  "name": "ignite-lab",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:guimap01/ignite-lab-01.git",
+  "author": "Pedro Guimaraes <pedromonteirogui@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "concurrently --restart-tries '-1' \"cd ./classroom && yarn start\" \"cd ./purchases && yarn start\" \"cd ./apollo-gateway && yarn start\" \"cd ./web && yarn dev\""
+  },
+  "dependencies": {
+    "concurrently": "^7.1.0"
+  }
+}

@@ -10,4 +10,10 @@ export class Course {
 
   @Field()
   slug: string;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
 }
